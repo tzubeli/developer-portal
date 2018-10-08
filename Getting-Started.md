@@ -40,12 +40,14 @@ Try it interactively [with the workflow](https://developer.kaltura.com/workflows
 If you're working in a web environment, we highly recommend using the [jQuery Chunked File Upload Library](https://github.com/kaltura/chunked-file-upload-jquery). This library handles chunking files in Javascript, automatically determining the optimal chunk size and number of parallel uploaded chunks, as well as handle pause-and-resume and retry in case of temporary network failures. Otherwise, follow the steps below: 
  
 **Step 1: Create an Upload Token**
+
 You’ll use [`uploadToken.add`](https://developer.kaltura.com/console/service/uploadToken/action/add) to create an uploadToken for your new video.
 ```
 uploadToken = KalturaUploadToken()
 token = client.uploadToken.add(uploadToken);
 ```
 **Step 2: Upload the Entry Data**
+
 We’ll call [`uploadToken.upload`](https://developer.kaltura.com/console/service/uploadToken/action/upload) to upload a new video file using the newly created token. If you're working in JavaScript, you can simply use the jQuery File Upload widget.
 Kaltura supports uploading big media files in chunks. Chunks can be uploaded in parallel and they will be appended according to their resumeAt position.
 If you do not intend to upload the file in chunks, set resume to `false` and finalChunk to `true`.
@@ -60,6 +62,7 @@ result = client.uploadToken.upload(uploadTokenId, fileData, resume, finalChunk, 
 ```
 
 **Step 3: Create a Media Entry**
+
 Here’s where you’ll set your video’s name and description use [`media.add`](https://developer.kaltura.com/console/service/media/action/add) to create the entry.
 ```
 entry = KalturaMediaEntry()
@@ -69,6 +72,7 @@ entry.mediaType = KalturaMediaType.VIDEO
 entry = client.media.add(entry);
 ```
 **Step 4: Attach the Video**
+
 Now that you have your entry, you need to associate it with the uploaded video token using [`media.addContent`](https://developer.kaltura.com/console/service/media/action/addContent). 
 ```
 resource = KalturaUploadedFileTokenResource()
@@ -79,6 +83,7 @@ mediaEntry = client.media.addContent(entry.id, resource);
 ### Searching Entries 
 To retrieve that newly uploaded entry, we'll use the [Kaltura Search API](https://developer.kaltura.com/console/service/eSearch/action/searchEntry). 
 **Step 1: Params and Operator**
+
 If you have multiple search conditions, you would set an `AND` or `OR` to your operator, but in this case we’ll only be searching for one item. However, you still need to add a searchItems array to the operator. 
 ```
 searchParams = KalturaESearchEntryParams()
@@ -86,16 +91,19 @@ searchParams.searchOperator = KalturaESearchEntryOperator()
 searchParams.searchOperator.searchItems = [] 
 ```
 **Step 2: Search Type**
+
 We'll be using the Unified search, which searches through all entry data, such as metadata and captions. Other options are `KalturaESearchEntryMetadataItem` or `KalturaESearchEntryCuePointItem`. We'll add that search item to the first index of the search operator.
 ```
 searchParams.searchOperator.searchItems[0] = KalturaESearchEntryUnifiedItem()
 ```
 **Step 3: Search Term**
+
 We'll search for the kaltura logo sample video, which we named accordingly.
 ```
 searchParams.searchOperator.searchItems[0].searchTerm = "kaltura logo"
 ```
 **Step 4: Search Item Type**
+
 In this case, we want an exact match of the text in our search term. Other options are `partial` or `startsWith`. 
 ```
 searchParams.searchOperator.searchItems[0].itemType = KalturaESearchItemType.EXACT_MATCH
