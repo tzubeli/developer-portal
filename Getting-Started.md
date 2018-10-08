@@ -21,7 +21,7 @@ config = KalturaConfiguration()
 client = KalturaClient(config)
 ```
  
-### Kaltura Session
+## Kaltura Session
  
 Because the Kaltura API is stateless, every request made to the API requires an authentication session to be passed along with the request. With the client library, it’s easy to set it once using the [`session.start`](https://developer.kaltura.com/console/service/session/action/start) action, like this:
 ```
@@ -36,7 +36,7 @@ Try it interactively [with the workflow](https://developer.kaltura.com/workflows
 [Read here](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html/) about other ways to create a Kaltura Session.
 
  
-### Uploading Media Files
+## Uploading Media Files
 If you're working in a web environment, we highly recommend using the [jQuery Chunked File Upload Library](https://github.com/kaltura/chunked-file-upload-jquery). This library handles chunking files in Javascript, automatically determining the optimal chunk size and number of parallel uploaded chunks, as well as handle pause-and-resume and retry in case of temporary network failures. Otherwise, follow the steps below: 
  
 **Step 1: Create an Upload Token**
@@ -80,7 +80,7 @@ resource.token = uploadTokenId
 mediaEntry = client.media.addContent(entry.id, resource);
 ```
 
-### Searching Entries 
+## Searching Entries 
 To retrieve that newly uploaded entry, we'll use the [Kaltura Search API](https://developer.kaltura.com/console/service/eSearch/action/searchEntry). 
 **Step 1: Params and Operator**
 
@@ -115,7 +115,7 @@ result = client.elasticsearch.eSearch.searchEntry(searchParams)
 
 Success! The result will return as a list of  `KalturaMediaEntry` objects. 
 
-### Embedding Your Video Player 
+## Embedding Your Video Player 
 You have your entry ID, so you’re just about ready to embed the kaltura player, but first you’ll need a `UI Conf ID`, which is basically the ID of the player in which the video is shown. 
 For this you’ll need to log into the KMC and click on the [Studio](https://kmc.kaltura.com/index.php/kmcng/studio/v2) tab. 
 
@@ -170,7 +170,7 @@ However, we recommend that a Kaltura Session be included in the player script, l
 		kalturaPlayer.loadMedia(mediaInfo);
 	</script>
 ```
-### Wrapping Up 
+## Wrapping Up 
 Including a kaltura session allows you to keep track of user analytics for each entry and set permissions and privileges. Notice that in this case, the KS is created on the server side of the app. 
 
 **Congrats! You’ve learned how to:**
