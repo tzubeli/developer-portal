@@ -4,18 +4,17 @@ This guide will enable you to quickly and easily get started with building your 
  
 ## Before You begin
  
-You will need Kaltura publisher credentials. If you don’t have them yet, start a free trial or contact us.
+You will need your Kaltura account credentials. If you don’t have them yet, start a [free trial((https://vpaas.kaltura.com/register).
 If you’ve signed in, you can click on your account info at the top right of this page to view your credentials.
-You can also find them at any time in the Kaltura Management Center [KMC](https://kmc.kaltura.com/index.php/kmcng/) by clicking the Account Settings tab.
+You can also find them at any time in the KMC's (Kaltura Management Console) by clicking the [Integration Settings tab](https://kmc.kaltura.com/index.php/kmcng/settings/integrationSettings).
  
-The simplest way to make requests to the Kaltura REST API is by downloading and importing the [Kaltura Client Libraries](https://developer.kaltura.com/api-docs/Client_Libraries/). We don’t recommend accessing the API directly, as your string requests might get really long and tricky. 
+The simplest way to make requests to the Kaltura REST API is by using one of the [Kaltura API Client Libraries](https://developer.kaltura.com/api-docs/Client_Libraries/). We don’t recommend making REST API requests directly, as your URL requests might get really long and tricky. 
  
-Once you’ve downloaded the client library, you'll need to import the library and create a Kaltura Client Object with which you'll make calls to the API. 
+Once you’ve downloaded the client library, you'll need to import the library and instantiate a KalturaClient object with which you'll make calls to the API. 
 Setup looks like this:
 
-```
+```python
 from KalturaClient import *
-from KalturaClient.Plugins.Core import *
 
 config = KalturaConfiguration()
 client = KalturaClient(config)
@@ -23,8 +22,9 @@ client = KalturaClient(config)
  
 ## Kaltura Session
  
-Because the Kaltura API is stateless, every request made to the API requires an authentication session to be passed along with the request. With the client library, it’s easy to set it once using the [`session.start`](https://developer.kaltura.com/console/service/session/action/start) action, like this:
-```
+Because the Kaltura API is stateless, every request made to the API requires an authentication session to be passed along with the request. With the client library, it’s easy to set it once using the [`session.start`](https://developer.kaltura.com/console/service/session/action/start) API action, like this:
+
+```python
 ks = client.session.start(
       <"ADMIN SECRET">,
       "vpaas@kaltura.com",
@@ -32,8 +32,7 @@ ks = client.session.start(
       <PARTNER ID>) 
 client.setKs(ks)
 ```
-Try it interactively [with the workflow](https://developer.kaltura.com/workflows/Generate_API_Sessions/Authentication).
-[Read here](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html/) about other ways to create a Kaltura Session.
+Try it interactively [with this workflow](https://developer.kaltura.com/workflows/Generate_API_Sessions/Authentication) or [read here](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html/) about other ways to create a Kaltura Session.
 
  
 ## Uploading Media Files
