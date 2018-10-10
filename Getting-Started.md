@@ -4,7 +4,7 @@ This guide will enable you to quickly and easily get started with building your 
  
 ## Before You begin
  
-You will need your Kaltura account credentials. If you don’t have them yet, start a [free trial((https://vpaas.kaltura.com/register).
+You will need your Kaltura account credentials. If you don’t have them yet, start a [free trial](https://vpaas.kaltura.com/register).
 If you’ve signed in, you can click on your account info at the top right of this page to view your credentials.
 You can also find them at any time in the KMC's (Kaltura Management Console) by clicking the [Integration Settings tab](https://kmc.kaltura.com/index.php/kmcng/settings/integrationSettings).
  
@@ -27,46 +27,51 @@ Because the Kaltura API is stateless, every request made to the API requires an 
 ```python
 ks = client.session.start(
       <"ADMIN SECRET">,
-      "vpaas@kaltura.com",
+      <"UNIQUE USER ID">,
       KalturaSessionType.ADMIN,
       <PARTNER ID>) 
 client.setKs(ks)
 ```
+
 Try it interactively [with this workflow](https://developer.kaltura.com/workflows/Generate_API_Sessions/Authentication). 
 
 Other methods of generating a Kaltura Session include the `user.loginByLoginId` action, which allows users to log in using their own credentials, and the `appToken` service, which is recommended when providing access to applications that are managed by others. 
-Learn more [here](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html/) about various ways to create a Kaltura Session.
+Learn more [here](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/VPaaS-API-Getting-Started/Generating-KS-with-App-Tokens.html) about various ways to create a Kaltura Session.
 
  
-## Uploading Media Files
-If you're working in a web environment, we highly recommend using the [jQuery Chunked File Upload Library](https://github.com/kaltura/chunked-file-upload-jquery). This library handles chunking files in Javascript, automatically determining the optimal chunk size and number of parallel uploaded chunks, as well as handle pause-and-resume and retry in case of temporary network failures. Otherwise, follow the steps below: 
+## Uploading Files
+
+Kaltura is built to handle files of all types and size. To best handle the upload of large files, Kaltura's upload API provides the ability to upload files in smaller chunks, in parllel (multiple chunks can be uploaded simultaneously to improve network utilization), as well as pause-and-resume and chunk upload retrys in case of temporary network failures. 
  
 **Step 1: Create an Upload Token**
 
 You’ll use [`uploadToken.add`](https://developer.kaltura.com/console/service/uploadToken/action/add) to create an uploadToken for your new video.
+
 ```
 uploadToken = KalturaUploadToken()
 token = client.uploadToken.add(uploadToken)
 ```
+
 An UploadToken is essentially a container that holds any file that will be uploaded to Kaltura. The token has an ID that is attached to the location of the file.  This process allows the upload to happen independently of the entry creation. In the case of large files, for example, the same uploadToken ID is used for each chunk of the same file.
 
-### About Chunked Video Uploading
+### About Chunked File Uploading
 
 How it works: 
+
 - On the client side of the app, the file is chunked into multiple fragments (of adjustable size)
 - The chunks are then uploaded to Kaltura storage (in some cases simultaneously)
 - Once all the chunks have arrived, they are assembled to form the original file [on the server side] so that file processing can begin
 
 Kaltura has three widgets that you can use for chunked uploading:
+
 - [JS Library](https://github.com/kaltura/kaltura-parallel-upload-resumablejs) (supports parallel uploading)
 - [Java Library](https://github.com/kaltura/Sample-Kaltura-Chunked-Upload-Java) (supports parallel uploading)
-- [JQuery Library](https://github.com/kaltura/chunked-file-upload-jquery)
+- [jQuery Library](https://github.com/kaltura/chunked-file-upload-jquery) (for jQuery based applications)
 
-To upload manually, continue following the steps: 
 
-**Step 2: Upload the Entry Data**
+**Step 2: Upload the File Data**
 
-We’ll call [`uploadToken.upload`](https://developer.kaltura.com/console/service/uploadToken/action/upload) to upload a new video file using the newly created token. If you don't have a video file handy, you can right-click [this link](http://cfvod.kaltura.com/pd/p/811441/sp/81144100/serveFlavor/entryId/1_2bjlk7qb/v/2/flavorId/1_d1ft34uv/fileName/Kaltura_Logo_Animation.flv/name/a.flv) to save a sample video of Kaltura's logo. In the case of large files, `resume` should be set to `true` and `finalChunk` is set to `false` until the final chunk. `resumeAt` determines at which byte to chunk the next fragment. 
+We’ll call [`uploadToken.upload`](https://developer.kaltura.com/console/service/uploadToken/action/upload) to upload a new video file using the newly created token. If you don't have a video file handy, you can right-click [this link](https://cfvod.kaltura.com/pd/p/2421271/sp/242127100/serveFlavor/entryId/1_fjqtp7ki/v/1/ev/6/flavorId/1_akjm7tkv/fileName/What_is_Video_Platform_as_a_Service.mp4) to save a sample video of Kaltura's logo. In the case of large files, `resume` should be set to `true` and `finalChunk` is set to `false` until the final chunk. `resumeAt` determines at which byte to chunk the next fragment. 
 
 ```
 uploadTokenId = token.id
@@ -77,9 +82,10 @@ resumeAt = 0
 result = client.uploadToken.upload(uploadTokenId, fileData, resume, finalChunk, resumeAt)
 ```
 
-**Step 3: Create a Media Entry**
+**Step 3: Creating the Kaltura Media Entry**
 
 Here’s where you’ll set your video’s name and description use [`media.add`](https://developer.kaltura.com/console/service/media/action/add) to create the entry.
+
 ```
 entry = KalturaMediaEntry()
 entry.name = "Kaltura Logo"
@@ -87,44 +93,61 @@ entry.description = "sample video of kaltura logo"
 entry.mediaType = KalturaMediaType.VIDEO
 entry = client.media.add(entry)
 ```
+
+> The Kaltura Entry is a logical object that package all of the related assets to the uploaded file. The Media Entry represents Media assets (such as Image, Audio, or Video assets) and references all of the metadata, caption assets, transcoded renditions (flavors), thumbnails, access control rules, entitled users or any other related asset that is a part of that particular media item.
+
 **Step 4: Attach the Video**
 
 Now that you have your entry, you need to associate it with the uploaded video token using [`media.addContent`](https://developer.kaltura.com/console/service/media/action/addContent). 
+
 ```
 resource = KalturaUploadedFileTokenResource()
 resource.token = uploadTokenId
 mediaEntry = client.media.addContent(entry.id, resource)
 ```
 
-## Searching Entries 
+> At this point, Kaltura will start analyzing the uploaded file, prepare for the transcoding and distribution flows and any other predefined workflows or notifications.
+
+## Searching for Entries 
+
 To retrieve that newly uploaded entry, we'll use the [Kaltura Search API](https://developer.kaltura.com/console/service/eSearch/action/searchEntry). 
+
 **Step 1: Params and Operator**
 
 If you have multiple search conditions, you would set an `AND` or `OR` to your operator, but in this case we’ll only be searching for one item. However, you still need to add a searchItems array to the operator. 
+
 ```
 searchParams = KalturaESearchEntryParams()
 searchParams.searchOperator = KalturaESearchEntryOperator()
 searchParams.searchOperator.searchItems = [] 
 ```
+
 **Step 2: Search Type**
 
 We'll be using the Unified search, which searches through all entry data, such as metadata and captions. Other options are `KalturaESearchEntryMetadataItem` or `KalturaESearchEntryCuePointItem`. We'll add that search item to the first index of the search operator.
+
 ```
 searchParams.searchOperator.searchItems[0] = KalturaESearchEntryUnifiedItem()
 ```
+
 **Step 3: Search Term**
 
 We'll search for the kaltura logo sample video, which we named accordingly.
+
 ```
 searchParams.searchOperator.searchItems[0].searchTerm = "kaltura logo"
 ```
+
 **Step 4: Search Item Type**
 
 In this case, we want an exact match of the text in our search term. Other options are `partial` or `startsWith`. 
+
 ```
 searchParams.searchOperator.searchItems[0].itemType = KalturaESearchItemType.EXACT_MATCH
 ```
+
 **Step 5: Search**
+
 ```
 result = client.elasticsearch.eSearch.searchEntry(searchParams)
 ```
@@ -132,6 +155,7 @@ result = client.elasticsearch.eSearch.searchEntry(searchParams)
 Success! The result will return as a list of  `KalturaMediaEntry` objects. 
 
 ## Embedding Your Video Player 
+
 You have your entry ID, so you’re just about ready to embed the kaltura player, but first you’ll need a `UI Conf ID`, which is basically the ID of the player in which the video is shown. 
 For this you’ll need to log into the KMC and click on the [Studio](https://kmc.kaltura.com/index.php/kmcng/studio/v2) tab. 
 
@@ -144,15 +168,20 @@ The TV player (or playkit) is built on modern javascript and focuses more on per
 3. Click back to Contents, and select Options>Share & Embed for the entry you'd like to embed, and you can copy the simple version of the embed code for the entry. It includes your Partner ID and the Ui Conf ID mentioned above, and is made up of these elements:
 
 **The script that loads the Player Library**
+
 ```
 <script src="https://cdnapisec.kaltura.com/p/2365491/sp/236549100/embedIframeJs/uiconf_id/42929331/partner_id/2365491"></script>
 ```
+
 **The div in the HTML with the ID of choice**
+
 ```
 <div id="kaltura_player" style="width: 560px; height: 395px;"></div>
 
 ```
+
 **And finally, the script that loads the player**
+
 ```
 <script>
 kWidget.embed({
@@ -165,8 +194,10 @@ kWidget.embed({
 });
 </script>
 ```
+
 Using the code above will quickly embed your video in your webpage. 
 However, we recommend that a Kaltura Session be included in the player script, like so: 
+
 ```
 <script type="text/javascript">
 		var kalturaPlayer = KalturaPlayer.setup({
@@ -186,16 +217,20 @@ However, we recommend that a Kaltura Session be included in the player script, l
 		kalturaPlayer.loadMedia(mediaInfo);
 	</script>
 ```
+
 ## Wrapping Up 
+
 Including a kaltura session allows you to keep track of user analytics for each entry and set permissions and privileges. Notice that in this case, the KS is created on the server side of the app. 
 
 **Congrats! You’ve learned how to:**
+
 - Create a kaltura session 
 - Upload media to your Kaltura account 
 - Search for your media
 - Show your media in a Kaltura Player 
 
 **Next steps:** 
+
 - Read the eSearch [blog post](https://corp.kaltura.com/blog/introducing-esearch-the-new-kaltura-search-api/)
 - Learn how to create and handle [thumbnails](https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html/)
 - Analyze Engagement [Analytics](https://developer.kaltura.com/api-docs/Video-Analytics-and-Insights/media-analytics.html)
