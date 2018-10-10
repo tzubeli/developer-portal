@@ -46,21 +46,35 @@ If you're working in a web environment, we highly recommend using the [jQuery Ch
 You’ll use [`uploadToken.add`](https://developer.kaltura.com/console/service/uploadToken/action/add) to create an uploadToken for your new video.
 ```
 uploadToken = KalturaUploadToken()
-token = client.uploadToken.add(uploadToken);
+token = client.uploadToken.add(uploadToken)
 ```
+An UploadToken is essentially a container that holds any file that will be uploaded to Kaltura. The token has an ID that is attached to the location of the file.  This process allows the upload to happen independently of the entry creation. In the case of large files, for example, the same uploadToken ID is used for each chunk of the same file.
+
+### About Chunked Video Uploading
+
+How it works: 
+- On the client side of the app, the file is chunked into multiple fragments (of adjustable size)
+- The chunks are then uploaded to Kaltura storage (in some cases simultaneously)
+- Once all the chunks have arrived, they are assembled to form the original file [on the server side] so that file processing can begin
+
+Kaltura has three widgets that you can use for chunked uploading:
+- [JS Library](https://github.com/kaltura/kaltura-parallel-upload-resumablejs) (supports parallel uploading)
+- [Java Library](https://github.com/kaltura/Sample-Kaltura-Chunked-Upload-Java) (supports parallel uploading)
+- [JQuery Library](https://github.com/kaltura/chunked-file-upload-jquery)
+
+To upload manually, continue following the steps: 
+
 **Step 2: Upload the Entry Data**
 
-We’ll call [`uploadToken.upload`](https://developer.kaltura.com/console/service/uploadToken/action/upload) to upload a new video file using the newly created token. If you're working in JavaScript, you can simply use the jQuery File Upload widget.
-Kaltura supports uploading big media files in chunks. Chunks can be uploaded in parallel and they will be appended according to their resumeAt position.
-If you do not intend to upload the file in chunks, set resume to `false` and finalChunk to `true`.
-If you don't have a video file handy, you can right-click [this link](http://cfvod.kaltura.com/pd/p/811441/sp/81144100/serveFlavor/entryId/1_2bjlk7qb/v/2/flavorId/1_d1ft34uv/fileName/Kaltura_Logo_Animation.flv/name/a.flv) to save a sample video of Kaltura's logo.
+We’ll call [`uploadToken.upload`](https://developer.kaltura.com/console/service/uploadToken/action/upload) to upload a new video file using the newly created token. If you don't have a video file handy, you can right-click [this link](http://cfvod.kaltura.com/pd/p/811441/sp/81144100/serveFlavor/entryId/1_2bjlk7qb/v/2/flavorId/1_d1ft34uv/fileName/Kaltura_Logo_Animation.flv/name/a.flv) to save a sample video of Kaltura's logo. In the case of large files, `resume` should be set to `true` and `finalChunk` is set to `false` until the final chunk. `resumeAt` determines at which byte to chunk the next fragment. 
+
 ```
 uploadTokenId = token.id
 fileData =  open('Kaltura_Logo_Animation.flv', 'r')
 resume = False
 finalChunk = True	
 resumeAt = 0
-result = client.uploadToken.upload(uploadTokenId, fileData, resume, finalChunk, resumeAt);
+result = client.uploadToken.upload(uploadTokenId, fileData, resume, finalChunk, resumeAt)
 ```
 
 **Step 3: Create a Media Entry**
@@ -71,7 +85,7 @@ entry = KalturaMediaEntry()
 entry.name = "Kaltura Logo"
 entry.description = "sample video of kaltura logo"
 entry.mediaType = KalturaMediaType.VIDEO
-entry = client.media.add(entry);
+entry = client.media.add(entry)
 ```
 **Step 4: Attach the Video**
 
@@ -79,7 +93,7 @@ Now that you have your entry, you need to associate it with the uploaded video t
 ```
 resource = KalturaUploadedFileTokenResource()
 resource.token = uploadTokenId
-mediaEntry = client.media.addContent(entry.id, resource);
+mediaEntry = client.media.addContent(entry.id, resource)
 ```
 
 ## Searching Entries 
