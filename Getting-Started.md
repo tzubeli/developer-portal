@@ -154,11 +154,13 @@ Notice that there are two studio options: TV and Universal.
 The Universal player (or mwEmbed as we call it) offers legacy support - such as for enterprise customers using the old internet explorer - and also features interactivity options, like the dual player or In-Video Quizzes. 
 The TV player (or playkit) is built on modern javascript and focuses more on performance. Both players are totally responsive. 
 
-1. Create a new player, give it a name, and check out the various player options.
+We will focus on the TV player: 
+
+1. Create a new TV player, give it a name, and check out the various player options.
 2. Save the player and go back to players list; you should now see it the top of the player list. Notice that player ID - that is your `UI Conf ID`. 
 Now you can use it for embedding your player:
 
-**Dynamic Player Embed (for TV Player)**
+**Dynamic Player Embed**
 
 ```
 <script type="text/javascript">
@@ -179,7 +181,7 @@ Now you can use it for embedding your player:
 		kalturaPlayer.loadMedia(mediaInfo);
 	</script>
 ```
-Learn about other embed types for the [TV player](https://github.com/kaltura/kaltura-player-js/blob/master/docs/embed-types.md) and the [Universal Player](https://knowledge.kaltura.com/embedding-kaltura-media-players-your-site) 
+Learn about other embed types [here.](https://github.com/kaltura/kaltura-player-js/blob/master/docs/embed-types.md)
 
 ## Wrapping Up 
 
