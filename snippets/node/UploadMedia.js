@@ -1,4 +1,4 @@
-//1 Create an Upload Token
+// 1 Create an Upload Token
 let uploadToken = new kaltura.objects.UploadToken();
 
 kaltura.services.uploadToken.add(uploadToken)
