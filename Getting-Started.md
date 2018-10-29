@@ -39,7 +39,8 @@ client.setKs(ks)
 
 Try it interactively [with this workflow](https://developer.kaltura.com/workflows/Generate_API_Sessions/Authentication). 
 
-Other methods of generating a Kaltura Session include the `user.loginByLoginId` action, which allows users to log in using their own credentials, and the `appToken` service, which is recommended when providing access to applications that are managed by others. 
+Generating a KS with `session.start` is simple, and great for applications which you alone have access to. 
+Other methods include the `user.loginByLoginId` action, which allows users to log in using their own KMC credentials, and the `appToken` service, which is recommended when providing access to applications in production that are managed by others. 
 Learn more [here](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Generating-KS-with-App-Tokens.html/) about various ways to create a Kaltura Session.
 
  
