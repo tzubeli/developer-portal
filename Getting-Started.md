@@ -30,7 +30,7 @@ ks = client.session.start(
       <"UNIQUE USER ID">,
       KalturaSessionType.ADMIN,
       <PARTNER ID>, 
-      <expiration>, 
+      <EXPIRY>, 
       "appId:appName-appDomain") 
 client.setKs(ks)
 ```
@@ -161,7 +161,6 @@ We will focus on the TV player:
 Now you can use it for embedding your player:
 
 **Dynamic Player Embed**
-
 ```
 <script type="text/javascript">
 		var kalturaPlayer = KalturaPlayer.setup({
