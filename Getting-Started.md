@@ -140,7 +140,14 @@ In this case, we want an exact match of the text in our search term. Other optio
 searchParams.searchOperator.searchItems[0].itemType = KalturaESearchItemType.EXACT_MATCH
 ```
 
-**Step 5: Search**
+**Step 4: Add Highlight**
+
+We set `addHighlight` to True so that we can see exactly where our search term appeared in the search results. 
+```
+searchParams.searchOperator.searchItems[0].addHighlight = True
+```
+
+**Step 6: Search**
 ```
 result = client.elasticsearch.eSearch.searchEntry(searchParams)
 ```
