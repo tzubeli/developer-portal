@@ -13,27 +13,13 @@ The simplest way to make requests to the Kaltura REST API is by using one of the
 Once you’ve downloaded the client library, you'll need to import the library and instantiate a KalturaClient object with which you'll make calls to the API. 
 Setup looks like this:
 
-```python
-from KalturaClient import *
-
-config = KalturaConfiguration()
-client = KalturaClient(config)
-```
+{% code_example setup %}
  
 ## Kaltura Session
  
 Because the Kaltura API is stateless, every request made to the API requires an authentication session to be passed along with the request. With the client library, it’s easy to set it once using the [`session.start`](https://developer.kaltura.com/console/service/session/action/start) API action, like this:
 
-```python
-ks = client.session.start(
-      <"ADMIN SECRET">,
-      <"UNIQUE USER ID">,
-      KalturaSessionType.ADMIN,
-      <PARTNER ID>, 
-      <EXPIRY>, 
-      "appId:appName-appDomain") 
-client.setKs(ks)
-```
+{% code_example session %}
 
 *Specifying an `app id` which contains the name and domain of the app allows you to get specific analytics per application, for cases where you’re running your application on various domains.*
 
@@ -50,10 +36,9 @@ Kaltura is built to handle files of all types and size. To best handle the uploa
 **Step 1: Create an Upload Token**
 
 You’ll use [`uploadToken.add`](https://developer.kaltura.com/console/service/uploadToken/action/add) to create an uploadToken for your new video.
-```
-uploadToken = KalturaUploadToken()
-token = client.uploadToken.add(uploadToken)
-```
+
+{% code_example media1 %}
+
 An UploadToken is essentially a container that holds any file that will be uploaded to Kaltura. The token has an ID that is attached to the location of the file.  This process allows the upload to happen independently of the entry creation. In the case of large files, for example, the same uploadToken ID is used for each chunk of the same file.
 
 ### About Chunked File Uploading
@@ -74,25 +59,13 @@ To upload manually, continue following the steps:
 
 We’ll call [`uploadToken.upload`](https://developer.kaltura.com/console/service/uploadToken/action/upload) to upload a new video file using the newly created token. If you don't have a video file handy, you can right-click [this link](http://cfvod.kaltura.com/pd/p/811441/sp/81144100/serveFlavor/entryId/1_2bjlk7qb/v/2/flavorId/1_d1ft34uv/fileName/Kaltura_Logo_Animation.flv/name/a.flv) to save a sample video of Kaltura's logo. In the case of large files, `resume` should be set to `true` and `finalChunk` is set to `false` until the final chunk. `resumeAt` determines at which byte to chunk the next fragment. 
 
-```
-uploadTokenId = token.id
-fileData =  open('Kaltura_Logo_Animation.flv', 'r')
-resume = False
-finalChunk = True	
-resumeAt = 0
-result = client.uploadToken.upload(uploadTokenId, fileData, resume, finalChunk, resumeAt)
-```
+{% code_example media2 %}
 
 **Step 3: Creating the Kaltura Media Entry**
 
 Here’s where you’ll set your video’s name and description use [`media.add`](https://developer.kaltura.com/console/service/media/action/add) to create the entry.
-```
-entry = KalturaMediaEntry()
-entry.name = "Kaltura Logo"
-entry.description = "sample video of kaltura logo"
-entry.mediaType = KalturaMediaType.VIDEO
-entry = client.media.add(entry)
-```
+
+{% code_example media3 %}
 
 The Kaltura Entry is a logical object that package all of the related assets to the uploaded file. The Media Entry represents Media assets (such as Image, Audio, or Video assets) and references all of the metadata, caption assets, transcoded renditions (flavors), thumbnails, access control rules, entitled users or any other related asset that is a part of that particular media item.
 
@@ -100,11 +73,8 @@ The Kaltura Entry is a logical object that package all of the related assets to 
 **Step 4: Attach the Video**
 
 Now that you have your entry, you need to associate it with the uploaded video token using [`media.addContent`](https://developer.kaltura.com/console/service/media/action/addContent). 
-```
-resource = KalturaUploadedFileTokenResource()
-resource.token = uploadTokenId
-mediaEntry = client.media.addContent(entry.id, resource)
-```
+
+{% code_example media4 %}
 
 At this point, Kaltura will start analyzing the uploaded file, prepare for the transcoding and distribution flows and any other predefined workflows or notifications.
 
@@ -113,44 +83,36 @@ To retrieve that newly uploaded entry, we'll use the [Kaltura Search API](https:
 
 **Step 1: Params and Operator**
 If you have multiple search conditions, you would set an `AND` or `OR` to your operator, but in this case we’ll only be searching for one item. However, you still need to add a searchItems array to the operator. 
-```
-searchParams = KalturaESearchEntryParams()
-searchParams.searchOperator = KalturaESearchEntryOperator()
-searchParams.searchOperator.searchItems = [] 
-```
+
+{% code_example search1 %}
 
 **Step 2: Search Type**
 
 We'll be using the Unified search, which searches through all entry data, such as metadata and captions. Other options are `KalturaESearchEntryMetadataItem` or `KalturaESearchEntryCuePointItem`. We'll add that search item to the first index of the search operator.
-```
-searchParams.searchOperator.searchItems[0] = KalturaESearchEntryUnifiedItem()
-```
+
+{% code_example search2 %}
 
 **Step 3: Search Term**
 
 We'll search for the kaltura logo sample video, which we named accordingly.
-```
-searchParams.searchOperator.searchItems[0].searchTerm = "kaltura logo"
-```
+
+{% code_example search3 %}
 
 **Step 4: Search Item Type**
 
 In this case, we want an exact match of the text in our search term. Other options are `partial` or `startsWith`. 
-```
-searchParams.searchOperator.searchItems[0].itemType = KalturaESearchItemType.EXACT_MATCH
-```
 
-**Step 4: Add Highlight**
+{% code_example search4 %}
+
+**Step 5: Add Highlight**
 
 We set `addHighlight` to True so that we can see exactly where our search term appeared in the search results. 
-```
-searchParams.searchOperator.searchItems[0].addHighlight = True
-```
+
+{% code_example search5 %}
 
 **Step 6: Search**
-```
-result = client.elasticsearch.eSearch.searchEntry(searchParams)
-```
+
+{% code_example search6 %}
 
 Success! The result will return as a list of  `KalturaMediaEntry` objects. 
 
