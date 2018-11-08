@@ -24,7 +24,7 @@ Let's look at a few available report types:
 
 ## Top Content
 
-Insights about user engagement during a given time period. In the example below, we set the `reportType` to Top Content (1), the date range to the entire month of October, and a page size of 20. The result contains a list of entries and their statistics.
+So you want to basic insights on how much engagement your entries have been drawing in the last month, like how many times the video has been loaded and then actually played, and when users are likely to drop-off. In the example below, we set the `reportType` to Top Content (1), the date range to the entire month of October, and a page size of 20. The result contains a list of entries and their statistics.
 
 ```python
 reportType = KalturaReportType.TOP_CONTENT
@@ -43,11 +43,18 @@ The result header looks like this:
 object_id,entry_name,count_plays,sum_time_viewed,avg_time_viewed,count_loads,load_play_ratio,avg_view_drop_off
 ```
 
+Maybe you only want insights for a particular channel in your media. In this case you'd set `categories` on the filter to the *full name* of your category, which can be found in the KMC by hovering over the category name, OR by calling `category.get` action with the category ID. The full name of the category usually includes its parent directories. 
+
+```
+reportInputFilter.categories = "Mediaspace>site>channels>podcasts"
+```
+
 If you set `objectIds` as one of the entries from the results, change the reportType to User Engagement (11), and set the filter to an End User filter, you'd get specific user engagement stats on that entry: 
 
 ```python 
 reportType = KalturaReportType.USER_ENGAGEMENT
 reportInputFilter = KalturaEndUserReportInputFilter()
+reportInputFilter.categories = "Mediaspace>site>channels>podcasts"
 reportInputFilter.fromDay = "20181001"
 reportInputFilter.toDay = "20181031"
 pager = KalturaFilterPager()
@@ -63,7 +70,7 @@ name,unique_videos,count_plays,sum_time_viewed,avg_time_viewed,avg_view_drop_off
 ```
 
 ## User Reports 
-Insights about top content contributors for the given time period. In the example below, we set the `reportType` to Top Contributors (5) and order by the total count. 
+Perhaps you're interested in which employees at the company have contributed the most videos. In the example below, we set the `reportType` to Top Contributors (5) and order by the total count. 
 
 ```
 reportType = KalturaReportType.TOP_CONTRIBUTORS
@@ -100,7 +107,7 @@ Result header:
 object_id,location_name,count_plays,count_plays_25,count_plays_50,count_plays_75,count_plays_100,play_through_ratio
 ```
 
-As you can see, there are many ways to customize your reporting using the Report API. You can easily try them out using our [Interactive Console](https://developer.kaltura.com/console/service/report/action/getTable) or see what they look like in the [KMC](https://kmc.kaltura.com/index.php/kmc/kmc4#analytics|contentDashboard). 
+As you can see, there are many ways to customize your report based on your business use cases. You can easily try them out using our [Interactive Console](https://developer.kaltura.com/console/service/report/action/getTable) or see what they look like in the [KMC](https://kmc.kaltura.com/index.php/kmc/kmc4#analytics|contentDashboard). 
 
 ## Integrated Analytics Partners
 
