@@ -43,7 +43,7 @@ The result header looks like this:
 object_id,entry_name,count_plays,sum_time_viewed,avg_time_viewed,count_loads,load_play_ratio,avg_view_drop_off
 ```
 
-Maybe you only want insights for a particular channel in your media. In this case you'd set `categories` on the filter to the *full name* of your category, which can be found in the KMC by hovering over the category name, OR by calling `category.get` action with the category ID. The full name of the category usually includes its parent directories. 
+Maybe you only want insights for a particular *channel* in your media. In this case you'd set `categories` on the filter to the *full name* of your category, which can be found in the KMC by hovering over the category name, OR by calling `category.get` action with the category ID. The full name of the category usually includes its parent directories. 
 
 ```
 reportInputFilter.categories = "Mediaspace>site>channels>podcasts"
@@ -88,7 +88,7 @@ Result header:
 object_id,name,count_total,count_video,count_audio,count_image,count_mix
 ```
 
-You can also get engagement insights by geographic region, by changing the `reportType` to Map Overlay (4). Setting the `objectIds` to one of the regions from the results will break down those insights by city. 
+You can also get engagement insights by **geographic region**, by changing the `reportType` to Map Overlay (4). Setting the `objectIds` to one of the regions from the results will break down those insights by city. 
 
 ```
 reportType = KalturaReportType.MAP_OVERLAY
