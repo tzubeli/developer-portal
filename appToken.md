@@ -16,11 +16,11 @@ Also included in the AppToken creation is the **Privileges String** which is mad
 
 ## Creating the AppToken 
 
-Let's walk through the steps mentioned above: 
+Let's walk through the steps to creating an App Token
 
-### Create a Kaltura User
+### Step 1: User Content Access
 
-Very simply, a new user requires an ID (string) that will identify it. The most basic code for the `user.add` action will look something like this: 
+We'll need to give access for specific content to a specific user. If you don't have a user yet, you can create one easily using the [`user.add`](https://developer.kaltura.com/console/service/user/action/add) action. 
 
 ```
 user = KalturaUser()
@@ -29,25 +29,23 @@ user.id = "DummyUser@kaltura.com"
 result = client.user.add(user);
 print(result);
 ```
+Additional user details can be found in the [console](https://developer.kaltura.com/console/service/user/action/add). That ID will be used for granting access, which you can do easily in the KMC. 
 
-There are additional fields that can be associated with a user, which you can find by creating a user in the [interactive console](https://developer.kaltura.com/console/service/user/action/add). 
-Now that you have your user, you can set its content access. 
+1. You'll need to first add entitlements to the category in question by going to Settings > Integration Settings and selecting Add Entitlement. You'll be given the option to select one of your existing categories. (Edit: comment on privacy context?)
 
-### Add the User to a Category 
+2. Back in Content > Categories, when you edit the category, you'll now be able to see the Entitlements tab. 
 
-### Create a User Role: KMC 
-The simpler way to create a User Role is in the Kaltura KMC. Under administration settings (the person icon), click the Roles tab and hit “Add Role” 
+.... 
+You can also do this via the api with the `categoryUser.add` action
+
+
+### Step 2: Create a user role 
+Again, the simple way to create a user role is via the KMC, under administration (the icon of a person) and Roles > Add Role. 
 You’ll have options to name and describe the new role (make it specific) and then select permitted actions. You’ll see that for each action, there is the option to allow all options, or to select specific permissions under that category. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific action altogether. Hit save and you should now see your new user role in the list. 
 
-### Create a User Role: API 
+Alternatively, if you know exactly which actions you’d like to include in your User Role (you can see all their names and descriptions in `permission.list`), you can use the `userRole.add` API action to create a new role. Be sure to set the status of your role to Active (1) 
 
-Alternatively, if you know exactly which actions you’d like to include in your User Role (you can see all their names and descriptions in permission.list), you can use the userrole.add API action to create a new role.
-
-Give your new role a name and a description, add permissions, and set the status to active (1). 
-
---- code sample ---
-
-
-*Note that you will not be able to see in the KMC any roles that are created outside the KMC.* You can see a list of all  your existing roles, however, with the userrole.list action. Make note of the ID of your new userrole as you’ll be needing it for your new apptoken. 
+*Note that you will not be able to see in the KMC any roles that are created outside the KMC.* 
+You can see a list of all  your existing roles, however, with the `userRole.list` action. Make note of the ID of your new user role as you’ll be needing it for your appToken. 
 
 ### Generate a Kaltura Session with the App Token 
