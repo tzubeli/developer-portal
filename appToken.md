@@ -14,7 +14,7 @@ Access to content is determined by the User that is included in the AppToken cre
 Also included in the AppToken creation is the **Privileges String** which is made up of key-value pairs that determine the actions available to the session, most importantly, the `setrole` key. It is mapped to the ID of the role, which you'll create with a list of the API actions permitted to this KS. 
 
 
-## Creating the AppToken 
+## Create the App Token 
 
 Let's walk through the steps to creating an App Token
 
@@ -33,19 +33,50 @@ Additional user details can be found in the [console](https://developer.kaltura.
 
 1. You'll need to first add entitlements to the category in question by going to Settings > Integration Settings and selecting Add Entitlement. You'll be given the option to select one of your existing categories. (Edit: comment on privacy context?)
 
-2. Back in Content > Categories, when you edit the category, you'll now be able to see the Entitlements tab. 
+2. If you head back to Content > Categories, when you edit the category, you'll now be able to see the Entitlements tab, where you'll be able to set restrictions on the category, like who can view its entries and their data, and who can publish to the category. For cases where only users with the relevant appToken should have access, select Private. 
 
-.... 
-You can also do this via the api with the `categoryUser.add` action
+3. At the bottom of the entitlements page, under Permitted Users, click Manage Users and add your user to the category, whether as a Member, Contributor, Moderator, or Manager.
+
+You can also do this via the API with the [`categoryUser.add`](https://developer.kaltura.com/console/service/categoryUser/action/add) action. You'll need your category ID and user ID (string). 
+
+```
+categoryUser = KalturaCategoryUser()
+categoryUser.categoryId = 123456789
+categoryUser.permissionLevel = KalturaCategoryUserPermissionLevel.MEMBER
+categoryUser.userId = "dummyuser@kaltura.com"
+
+result = client.categoryUser.add(categoryUser);
+print(result);
+```
 
 
 ### Step 2: Create a user role 
-Again, the simple way to create a user role is via the KMC, under administration (the icon of a person) and Roles > Add Role. 
+Again, the simple way to create a user role is via the KMC, under administration (the icon of a person) and select Roles > Add Role. 
 You’ll have options to name and describe the new role (make it specific) and then select permitted actions. You’ll see that for each action, there is the option to allow all options, or to select specific permissions under that category. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific action altogether. Hit save and you should now see your new user role in the list. 
 
 Alternatively, if you know exactly which actions you’d like to include in your User Role (you can see all their names and descriptions in `permission.list`), you can use the `userRole.add` API action to create a new role. Be sure to set the status of your role to Active (1) 
 
 *Note that you will not be able to see in the KMC any roles that are created outside the KMC.* 
-You can see a list of all  your existing roles, however, with the `userRole.list` action. Make note of the ID of your new user role as you’ll be needing it for your appToken. 
+You can see a list of all  your existing roles, however, with the [`userRole.list`](https://developer.kaltura.com/console/service/userRole/action/list) action. Make note of the ID of your new user role as you’ll be needing it for your appToken. 
 
-### Generate a Kaltura Session with the App Token 
+### Step 3: Creating the App Token 
+
+Let's bring it all together. We have a user, which has been given access to the relevant categories. We have a userrole, and its ID. We will use hash of type SHA256 and give the session a duration of one day. 
+
+```
+appToken = KalturaAppToken()
+appToken.description = "AppToken for Demo"
+appToken.hashType = KalturaAppTokenHashType.SHA256
+appToken.sessionDuration = 86400
+appToken.sessionPrivileges = "setrole:15737171"
+appToken.sessionType = KalturaSessionType.USER
+appToken.sessionUserId = "dummyuser@kaltura.com"
+
+result = client.appToken.add(appToken);
+print(result);
+```
+
+Sucecss! New apptoken! In the response you'll get an object containing a token, as well as an ID. You'll need those for the next steps. 
+
+## Generate a Kaltura Session with the App Token 
+
