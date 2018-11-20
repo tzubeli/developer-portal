@@ -60,7 +60,6 @@ result = client.categoryUser.add(categoryUser);
 print(result);
 ```
 
-
 ### Step 2: Create a user role 
 Again, the simple way to create a user role is via the KMC, under administration (the icon of a person) and select Roles > Add Role. 
 You'll have options to name and describe the new role (make it specific) and then select permitted actions. You'll see that for each action, there is the option to allow all options, or to select specific permissions under that category. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific action altogether. Hit save and you should now see your new user role in the list. 
@@ -87,7 +86,57 @@ result = client.appToken.add(appToken);
 print(result);
 ```
 
-Success! New appToken! In the response you'll get an object containing a token, as well as an ID. You'll need those for the next steps. 
+In the response you'll get an appToken object containing both an ID and a token. Hold on to those as you'll need them for the next steps. 
 
 ## Generate a Kaltura Session with the App Token 
+
+The Kaltura Session generated with the appToken will have the content and action permissions that were configured in the apptoken. 
+
+### Step 1: Create a Kaltura Session 
+
+Because a Kaltura Session is required for every call to the API, we'll need to create an unprivileged session before being able to create the AppToken session. We use the [`session.startWidgetSession`] action with the widget ID, which is your partner ID with an underscore prefix. 
+
+```
+widgetId = "_1234569"
+expiry = 86400
+
+result = client.session.startWidgetSession(widgetId, expiry);
+ks = result.ks 
+```
+The result will contain that unprivileged KS which you need for the next step 
+
+### Step 2: Compute the Token Hash
+
+We'll create a hash of the appToken `token` value together with the unprivileged KS, using a hash function in the language of your choice. 
+*Make sure to use the same hash type as the one used for creating the appToken.*
+
+```
+hashString = hashlib.sha256(result.ks.encode('ascii') + appTokenValue.encode()).hexdigest()
+```
+
+The resulting string is the tokenHash which you'll use in the next step. 
+
+### Step 3: Generate the Session 
+
+We'll use the `appToken.startSession` action with the unprivileged KS, the hashToken, and the token `ID`. Note that you don't need to include a User ID or session privileges, as we've already associated those with the appToken, which will override anything added in this step. 
+
+```
+id = "<token ID>"
+tokenHash = "<token hash>"
+userId = ""
+type = KalturaSessionType.USER
+expiry = 3600
+sessionPrivileges = ""
+
+result = client.appToken.startSession(id, tokenHash, userId, type, expiry, sessionPrivileges);
+print(result);
+
+```
+
+You'll notice in the response that the user ID is the same as the one you configured, as well as the role ID in the privileges string. The expiry is set to an hour (although you can change this), meaning that if you wish to change access permissions on this appToken, you can make those changes to the User or the Role associated with the appToken, and those changes will be reflected the next time a Kaltura Session is generated with this appToken. 
+
+
+Congratulations! Your applications are now ready to use this KS to access the Kaltura API with your pre configured limitations. 
+
+
 
