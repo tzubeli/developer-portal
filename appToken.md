@@ -5,18 +5,29 @@ The appToken is created and customized by the account administrator, and then us
 
 ## Before You Start
 
-Before you create an appToken, you need to determine two things: which content to provide access to, and which actions to grant permissions for. 
+Before you create an appToken, you need to determine two things: 
+1. Which content this application will need access to.
+2. Which API actions this app will be granted permissions for. 
 
-### Content Access
-Access to content is determined by the User that is included in the AppToken creation. That user is added via the KMC or directly through the API to the relevant categories that should be available to the KS. 
+### Content Entitlements
 
-### Action Permissions 
-Also included in the AppToken creation is the **Privileges String** which is made up of key-value pairs that determine the actions available to the session, most importantly, the `setrole` key. It is mapped to the ID of the role, which you'll create with a list of the API actions permitted to this KS. 
+The application's access is limited to specific content in Kaltura by using Entitlements. **Entitlements** is the relationship of a User with a given Category. By adding a User ID as a member of a specific Category, you enable that user to access the content in that category. Additionally, you can specify the level of access this user will have to the category - such as admin, contributor, moderator, or member. Read more about entitlements and user access rules [here](https://developer.kaltura.com/api-docs/Secure_Control_and_Govern/Content-Categories-Management.html). 
+
+Limiting an application to specific content is done by creating a User ID for that application, assigning permissions to that user in the relevant categories, and then specifying that user ID when creating the AppToken.  
+
+Users and entitlements can be added and configured via the KMC or directly through the API (which will be covered below). 
+
+### Permissions for API Actions  
+
+To achieve optimal security for how your apps access your account, you will want to carefully consider which API actions each app should be allowed to execute. When creating Kaltura Sessions, those API permissions are controlled via [Privileges](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html). 
+
+The **Privileges String** is made up of key-value pairs that determine the actions available to this Kaltura Session. 
+When assigning appTokens to your apps, the easiest way to configure the permitted actions is with User Roles. Roles are created [in the KMC](https://kmc.kaltura.com/index.php/kmcng/administration/roles/list), and the ID is then mapped to the `setrole` privilege key in the permissions string. This allows you to easily manage the permitted actions for the app Token by editing the role at any time.
 
 
 ## Create the App Token 
 
-Let's walk through the steps to creating an App Token
+Now let's walk through the steps to creating an App Token
 
 ### Step 1: User Content Access
 
@@ -31,7 +42,7 @@ print(result);
 ```
 Additional user details can be found in the [console](https://developer.kaltura.com/console/service/user/action/add). That ID will be used for granting access, which you can do easily in the KMC. 
 
-1. You'll need to first add entitlements to the category in question by going to Settings > Integration Settings and selecting Add Entitlement. You'll be given the option to select one of your existing categories. (Edit: comment on privacy context?)
+1. You'll need to first add entitlements to the category in question by going to Settings > Integration Settings and selecting Add Entitlement. You'll be given the option to select one of your existing categories and then enter a privacy context label, which will now be the unique name of these entitlements.  
 
 2. If you head back to Content > Categories, when you edit the category, you'll now be able to see the Entitlements tab, where you'll be able to set restrictions on the category, like who can view its entries and their data, and who can publish to the category. For cases where only users with the relevant appToken should have access, select Private. 
 
@@ -52,12 +63,12 @@ print(result);
 
 ### Step 2: Create a user role 
 Again, the simple way to create a user role is via the KMC, under administration (the icon of a person) and select Roles > Add Role. 
-You’ll have options to name and describe the new role (make it specific) and then select permitted actions. You’ll see that for each action, there is the option to allow all options, or to select specific permissions under that category. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific action altogether. Hit save and you should now see your new user role in the list. 
+You'll have options to name and describe the new role (make it specific) and then select permitted actions. You'll see that for each action, there is the option to allow all options, or to select specific permissions under that category. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific action altogether. Hit save and you should now see your new user role in the list. 
 
-Alternatively, if you know exactly which actions you’d like to include in your User Role (you can see all their names and descriptions in `permission.list`), you can use the `userRole.add` API action to create a new role. Be sure to set the status of your role to Active (1) 
+Alternatively, if you know exactly which actions you'd like to include in your User Role (you can see all their names and descriptions in `permission.list`), you can use the `userRole.add` API action to create a new role. Be sure to set the status of your role to Active (1) 
 
 *Note that you will not be able to see in the KMC any roles that are created outside the KMC.* 
-You can see a list of all  your existing roles, however, with the [`userRole.list`](https://developer.kaltura.com/console/service/userRole/action/list) action. Make note of the ID of your new user role as you’ll be needing it for your appToken. 
+You can see a list of all your existing roles, however, with the [`userRole.list`](https://developer.kaltura.com/console/service/userRole/action/list) action. Make note of the ID of your new user role as you'll be needing it for your appToken. 
 
 ### Step 3: Creating the App Token 
 
@@ -76,7 +87,7 @@ result = client.appToken.add(appToken);
 print(result);
 ```
 
-Sucecss! New apptoken! In the response you'll get an object containing a token, as well as an ID. You'll need those for the next steps. 
+Success! New appToken! In the response you'll get an object containing a token, as well as an ID. You'll need those for the next steps. 
 
 ## Generate a Kaltura Session with the App Token 
 
