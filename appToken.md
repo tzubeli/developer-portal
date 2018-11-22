@@ -1,33 +1,20 @@
-# Application Token Authorization Workflow
+# Application Session Management 
 
-An Application Token is useful in cases where different applications and users with varying access permissions need to access your Kaltura account via API. 
-The appToken is created and customized by the account administrator, and then used by the developers to generate Kaltura Sessions for their respective applications.
+An Application Token is useful in cases where different applications with varying permissions need access to your Kaltura account, without using your Admin Secret. 
+The appToken is created and customized by the account administrator, and then used by the developers to generate Kaltura Sessions for their respective applications. This allows access to the API to be revoked at any time with the deletion of the appToken. 
 
 ## Before You Start
 
-Before you create an appToken, you need to determine two things: 
-1. Which content this application will need access to.
-2. Which API actions this app will be granted permissions for. 
+Before you create an appToken, you need to decide whether to create a "blank" appToken, or one preconfigured with permissions and access control. If your only concern is giving access without sharing your admin secret, a basic appToken is sufficient. But if ou want to always limit the permissions of a specific application, you'll need to create the appToken with [Privileges](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html). However, any configurations included in the creation of the appToken *cannot* be overriden when the session is created with that appToken. 
 
-### Content Entitlements
-
-The application's access is limited to specific content in Kaltura by using Entitlements. **Entitlements** is the relationship of a User with a given Category. By adding a User ID as a member of a specific Category, you enable that user to access the content in that category. Additionally, you can specify the level of access this user will have to the category - such as admin, contributor, moderator, or member. Read more about entitlements and user access rules [here](https://developer.kaltura.com/api-docs/Secure_Control_and_Govern/Content-Categories-Management.html). 
-
-Limiting an application to specific content is done by creating a User ID for that application, assigning permissions to that user in the relevant categories, and then specifying that user ID when creating the AppToken.  
-
-Users and entitlements can be added and configured via the KMC or directly through the API (which will be covered below). 
-
-### Permissions for API Actions  
-
-To achieve optimal security for how your apps access your account, you will want to carefully consider which API actions each app should be allowed to execute. When creating Kaltura Sessions, those API permissions are controlled via [Privileges](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html). 
-
-The **Privileges String** is made up of key-value pairs that determine the actions available to this Kaltura Session. 
-When assigning appTokens to your apps, the easiest way to configure the permitted actions is with User Roles. Roles are created [in the KMC](https://kmc.kaltura.com/index.php/kmcng/administration/roles/list), and the ID is then mapped to the `setrole` privilege key in the permissions string. This allows you to easily manage the permitted actions for the app Token by editing the role at any time.
+The **Privileges String** that could be included in the appToken is made up of key-value pairs that determine the actions available to this Kaltura Session. Some keys that may be useful for your appToken are: 
+- `setrole`: When assigning appTokens to your apps, the easiest way to configure the permitted actions is with User Roles. Roles are created [in the KMC](https://kmc.kaltura.com/index.php/kmcng/administration/roles/list), and give you the option of adding and removing specific actions available to the app. The ID of the Role is then mapped to the `setrole` privilege key in the permissions string. This allows you to easily manage the permitted actions by editing the role at any time after.
+- `privacycontext`: If you want to limit the app to the content of a specific category, you could [set entitlements](https://kmc.kaltura.com/index.php/kmcng/settings/integrationSettings) on that category and map it to the `privacycontext` key (examples below). Keep in mind however, that all end users who will need to access that content must be members of the category.
 
 
 ## Create the App Token 
 
-Now let's walk through the steps to creating an App Token
+We'll start with a basic, "blank" appToken. 
 
 ### Step 1: User Content Access
 
