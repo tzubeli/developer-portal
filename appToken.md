@@ -41,7 +41,7 @@ In the result you'll see an `id` as well as a `token`. Hold on to those as you'l
 
 The easy way to create a User Role is [in the KMC](https://kmc.kaltura.com/index.php/kmcng/administration/roles/list). You'll have options to name and describe the new role (make it specific) and then select permitted actions. You'll see that for each category, there is the option to allow all permissions, or to select specific permissions. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific category altogether. Hit save and you should now see your new User Role in the list. 
 
-Alternatively, if you know exactly which actions you'd like to include in your User Role (you can see all of the available permission names and descriptions in [`permission.list`](https://developer.kaltura.com/console/service/permission/action/list)), you can use the [`userRole.add`](https://developer.kaltura.com/console/service/userRole/action/add) API action to create a new role. Be sure to set the status of your role to Active (1).
+Alternatively, if you know exactly which actions you'd like to include in your User Role, you can use the [`userRole.add`](https://developer.kaltura.com/console/service/userRole/action/add) API action to create a new role. You can see all of the available permission names and descriptions by listing them with [`permission.list`](https://developer.kaltura.com/console/service/permission/action/list). Be sure to set the status of your role to Active (1).
 
 > Note: You will not be able to see in the KMC any roles that are created outside the KMC.
 
@@ -78,7 +78,7 @@ print(result);
 
 In cases where you'd like to use App Tokens to grant access to particular users, you can include the user ID during the creation of the App Token (`appToken.add`). When including a user ID in the App Token object, that user ID can not be overridden when calling `appToken.startSession`. This can be useful when wanting to grant particular users with API access and ensure they can not mask their ID as someone else while carrying API actions.
 
-Let's bring it all together. We have a user. We have a User Role, and its ID. We will use hash of type SHA256 and give the session a duration of one day. 
+Let's bring it all together. We have a user. We have a User Role, and its ID. We will use hash of type `SHA256` and give the session a duration of one day. 
 
 ```
 appToken = KalturaAppToken()
