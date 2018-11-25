@@ -101,7 +101,7 @@ The Kaltura Session generated with the App Token will have the content and actio
 
 ### Step 1: Create a Kaltura Session 
 
-Because a Kaltura Session is required for every call to the API, we'll need to create an unprivileged session before being able to create the App Token session. We use the [`session.startWidgetSession`] action with the widget ID, which is your partner ID with an underscore prefix. 
+Because a Kaltura Session is required for every call to the API, we'll need to create an unprivileged session before being able to create the App Token session. We use the [`session.startWidgetSession`](https://developer.kaltura.com/console/service/appToken/action/startSession) action with the widget ID, which is your partner ID with an underscore prefix. 
 
 ```
 widgetId = "_1234569"
