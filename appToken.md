@@ -1,27 +1,30 @@
 # Application Session Management 
 
-An Application Token is useful in cases where different applications with varying permissions need access to your Kaltura account, without using your Admin Secret. 
-The appToken is created and customized by the account administrator, and then used by the developers to generate Kaltura Sessions for their respective applications. This allows access to the API to be revoked at any time with the deletion of the appToken. 
+An Application Token is useful in cases where different applications with varying permissions need access to your Kaltura account, without using your account's Secrets. The appToken is created and customized by the account administrator, and then used by the developers to generate Kaltura Sessions for their respective applications. This allows access to the API to be revoked at any time with the deletion of the appToken. 
 
 ## Before You Start
 
-Before you create an appToken, you need to decide whether to create a "blank" appToken, or one preconfigured with permissions. If your only concern is giving access without sharing your Admin secret, a basic appToken is sufficient. But if you want to always limit the permissions of a specific application, you'll need to create the appToken with pre-configured [privileges](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html). Similarly, it is also possible to limit the appToken to a particular user ID should your implementation call for it. 
+Before you create an appToken, you need to decide whether to create a "blank" appToken, or one preconfigured with permissions. If your only concern is giving access without sharing your accout secrets, a basic appToken is sufficient. But if you want to always limit the permissions of a specific application, you'll need to create the appToken with pre-configured [privileges](https://developer.kaltura.com/api-docs/VPaaS-API-Getting-Started/Kaltura_API_Authentication_and_Security.html). Similarly, it is also possible to limit the appToken to a particular user ID should your implementation call for it. 
 
 > Note: Any configurations (privileges or user ID) included in the creation of the appToken ([`appToken.add`](https://developer.kaltura.com/console/service/appToken/action/add)) *cannot* be overridden when the session is created with that appToken ([`appToken.startSession`](https://developer.kaltura.com/console/service/appToken/action/startSession)). 
 
 The **privileges string** that could be included in the appToken is made up of `key:value` pairs that determine the actions available to this Kaltura Session. The following are common privileges for limiting your appTokens access: 
 
 - `setrole`: When assigning App Tokens to your apps, the easiest way to configure the permitted actions is with User Roles. Roles are created [in the KMC](https://kmc.kaltura.com/index.php/kmcng/administration/roles/list), and give you the option of adding and removing specific actions available to the app. The ID of the Role is then mapped to the `setrole` privilege key in the permissions string. This allows you to easily manage the permitted actions by editing the role at any time after.
-- `privacycontext`: If you want to limit the app to the content of a specific category, you could [set entitlements](https://kmc.kaltura.com/index.php/kmcng/settings/integrationSettings) on that category and map it to the `privacycontext` key (examples below). Keep in mind however, that if you set the category's Content Privacy to Private, all end users who will need to access the content in this category must be added as members of the category.
+- `privacycontext`: If you want to limit the app to the content of a specific category, you could [set entitlements](https://kmc.kaltura.com/index.php/kmcng/settings/integrationSettings) on that category and map it to the `privacycontext` key (examples below). Keep in mind however, that if you set the category's Content Privacy to Private, all end users who will need to access the content in this category must be added as members of the category. A common use of this feature is to limit an App Token's access to a specific set of Channels or Galleries in a MediaSpace instance. The `privacycontext` of a MediaSpace instance is found in the `privacyContext` value under the `Global/Application` settings page.
 
-> Note: While a user ID *can* be added to an App Token during session generation (if no user ID was specified in the App Token creation), privileges can NOT be added during session generation. 
+> Note: While a user ID *can* be added to an App Token during session generation (if no user ID was specified in the App Token creation), privileges *can not* be added during session generation. 
 
 
 ## Creating the App Token 
 
-We will cover App Token creation with and without pre-configured privileges. Notice that the App Token has a sessionType. If set to type ADMIN (2), any session created with it will be a ADMIN session. If set to USER (0), however, various actions including `baseEntry.list`, will not be available. A USER App Token would be useful in cases where the application is only uploading media but not viewing it afterwards. Furthermore, we recommend using hash of type [`SHA256`](https://en.wikipedia.org/wiki/SHA-2), but whichever you use, make sure to be consistent in the session creation. 
+We will cover App Token creation with and without pre-configured privileges. Notice that the App Token has a `sessionType`. If set to type `ADMIN` (2), any session created with it will have complete access to the account, *regardless of any further privilege restrictions*. If set to `USER` (0), the session will be limited by its `sessionPrivileges` and `userId`. Kaltura recommends using USER sessions for most use cases. See [Kaltura's API Authentication and Security](https://knowledge.kaltura.com/kalturas-api-authentication-and-security) for more details.
 
-### Basic App Token 
+> Note: An ADMIN session should only be used for backend purposes. An ADMIN session string should never reach an end-user device via the browser or a native application.
+
+An App Token requires a hash function to be set. Kaltura recommends using hash of type [`SHA256`](https://en.wikipedia.org/wiki/SHA-2). MD5 and SHA-1 hash functions are also available. 
+
+### Creating a Basic App Token 
 
 We'll start with an App Token without privileges, without a user, and without an expiry date, using [`appToken.add`](https://developer.kaltura.com/console/service/appToken/action/add):
 
@@ -39,7 +42,7 @@ In the result you'll see an `id` as well as a `token`. Hold on to those as you'l
 
 ### Set a User Role
 
-The easy way to create a User Role is [in the KMC](https://kmc.kaltura.com/index.php/kmcng/administration/roles/list). You'll have options to name and describe the new role (make it specific) and then select permitted actions. You'll see that for each category, there is the option to allow all permissions, or to select specific permissions. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific category altogether. Hit save and you should now see your new User Role in the list. 
+The easy way to create a User Role is [in the KMC](https://kmc.kaltura.com/index.php/kmcng/administration/roles/list). You'll have options to name and describe the new role (make it specific) and then select permitted actions. You'll see that for each permissions group, there is the option to allow all permissions, to allow read-only access, or to select specific permissions. For example, under Content Moderation, you may allow this User Role to perform all actions except for deleting. You can also switch off a specific category altogether. Hit save and you should now see your new User Role in the list. 
 
 Alternatively, if you know exactly which actions you'd like to include in your User Role, you can use the [`userRole.add`](https://developer.kaltura.com/console/service/userRole/action/add) API action to create a new role. You can see all of the available permission names and descriptions by listing them with [`permission.list`](https://developer.kaltura.com/console/service/permission/action/list). Be sure to set the status of your role to Active (1).
 
@@ -53,8 +56,11 @@ appToken.sessionPrivileges = "setrole:1234567"
 
 ### Add a Privacy Context 
 
-Adding a privacy context will limit the session to the contents of a particular category.  
+Adding a privacy context will limit the session to the contents of a particular MediaSpace instance (or correctly configured set of categories).
+
 To enable entitlements on the category, select Add Entitlements in the Integration Settings in [KMC](https://kmc.kaltura.com/index.php/kmcng/settings/integrationSettings). Then select a category and give it a Privacy Context Label. That is the name that should be used in the Privileges String when adding the `privacycontext` key. 
+
+To retrieve the `privacycontext` of an existing MediaSpace instance, locate the `privacyContext` value under the `Global/Application` settings page.
 
 ```
 appToken.sessionPrivileges = "setrole:1234567,privacycontext:application"
