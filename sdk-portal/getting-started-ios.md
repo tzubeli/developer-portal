@@ -25,7 +25,7 @@ target 'OVPStarter' do
 end
 ```
 
-## Adding a Basic Kaltura Player 
+## Add a Basic Kaltura Player 
 
 The code below will cover a few functions needed in order to get the bare bones of a kaltura player, as well as a few additional steps regarding plugins and UI. 
 Note that the Kaltura Player does *not* include a UI, and the UI examples below are for instructional purposes only. 
@@ -77,6 +77,8 @@ let sessionProvider = SimpleSessionProvider(serverURL: SERVER_BASE_URL, partnerI
 let mediaProvider: OVPMediaProvider = OVPMediaProvider(sessionProvider)
 ```
 
+> **Including a Kaltura Session in the player** allows for monitoring and analytics on your video, as well as the ability to restrict content access. The Kaltura Session should always be created on the server side. If you don't include a KS, the video can be viewed by anyone, and the viewers will be recorded as anonymous. 
+
 Now set your entry ID on the `mediaProvider`
 
 ```
@@ -121,11 +123,11 @@ func setupPlayer() {
 
 We're missing on last thing: the player container. Head over to the Storyboard. Create a new PlayerView, and drag to get your desired player size. Name it playerContainer. There should be a new outlet in the ViewController. 
 
-At the beginning of the setupPlayer() function, set the player to the new playerContainer. 
+At the beginning of the setupPlayer() function, set the player to equal the new playerContainer. 
 ```
 self.player?.view = self.playerContainer
 ```
-At this point, you should be able to successfully run the code and see your video player in the app. The complete code looks like this: 
+At this point, you should be able to successfully run the code and see your video player in the app. So far, your code should look like this: 
 
 ```
 import UIKit
@@ -185,9 +187,3 @@ class ViewController: UIViewController {
 ### Add Buttons and Controls 
 
 As you've noticed, you're unable to play or pause the video. This is where controls come in. 
-
-
-## Adding a Kaltura Session to your video 
-
-In most cases, your video will be viewed anonymously. But if you want to have content access settings on your videos, you'll need to pass a Kaltura Session, or KS, to the player. This KS should be created on the server side 
-
