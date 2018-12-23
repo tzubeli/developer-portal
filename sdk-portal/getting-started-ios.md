@@ -1,4 +1,4 @@
-# Getting Started with SDK 3.0 iOS (OVP)
+# Getting Started with SDK 3.0 iOS
 
 This guide will walk you through the steps for adding a Kaltura video player to your iOS mobile application. If you are looking for OTT functionality, switch to this doc instead. 
 
