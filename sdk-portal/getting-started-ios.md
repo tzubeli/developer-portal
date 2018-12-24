@@ -6,7 +6,7 @@ This guide will walk you through the steps for adding a Kaltura video player to 
 
 You'll need two things: 
 1. Your Kaltura Partner ID, which can be found in the KMC under Settings>Integration Settings 
-2. The entry ID of your video, which also can be found in the KMC, in your list of entries
+2. A video entry ID, which also can be found in the KMC, in your list of entries
 
 ### Pods 
 
@@ -21,7 +21,6 @@ platform :ios, '9.0'
 target 'OVPStarter' do
   pod 'PlayKit'
   pod 'PlayKitProviders'
-  pod 'PlayKitKava'
 end
 ```
 
@@ -50,42 +49,55 @@ let PARTNER_ID = 0000000
 let ENTRY_ID = "1_abc6st"
 ```
 
-### Set Up the Player
+### Create the Player
 
-You'll first declare the ks (kaltura session) and the player
+Inside the class, declare the kaltura session (ks) and the player. 
 
 ```
 var ks: String?
 var player: Player! 
 ```
 
-In the `viewDidLoad` function, load the player. We'll start without a pluginConfig, but we'll cover it in a couple of steps. 
+> **Including a Kaltura Session in the player** allows for monitoring and analytics on your video, as well as the ability to restrict content access. The Kaltura Session should always be created on the server side. If you don't include a KS, the video can be viewed by anyone, and the viewers will be recorded as anonymous. 
+
+Now lets create our video player. Head over to the Storyboard and create a new PlayerView of the desired size. Add a referencing outlet to your ViewController named playerContainer. Create a new function called `playerSetup` and set the player variable to equal the new playerContainer 
+
+```
+func setupPlayer() {
+    self.player?.view = self.playerContainer
+}
+```
+
+Now in the `viewDidLoad` function, load the player. We'll start without a pluginConfig, but we will cover adding plugins later in this guide. 
 
  ```
   self.player = try! PlayKitManager.shared.loadPlayer(pluginConfig: nil)
  ```
-Now create and call a new function called setupPlayer. 
-
+Next, call the newly created setupPlayer function. 
 ```
 self.setupPlayer()
 ```
 
-In the setupPlayer function, you'll need the `SimpleSessionProvider` and `OVPMediaProvider` objects. 
+Now create and call a new function called `loadMedia`. 
+
+```
+self.loadMedia()
+```
+
+In the loadMedia function, you'll use the `SimpleSessionProvider` and `OVPMediaProvider` objects. 
 
 ```
 let sessionProvider = SimpleSessionProvider(serverURL: SERVER_BASE_URL, partnerId: Int64(PARTNER_ID), ks: ks)
 let mediaProvider: OVPMediaProvider = OVPMediaProvider(sessionProvider)
 ```
 
-> **Including a Kaltura Session in the player** allows for monitoring and analytics on your video, as well as the ability to restrict content access. The Kaltura Session should always be created on the server side. If you don't include a KS, the video can be viewed by anyone, and the viewers will be recorded as anonymous. 
-
-Now set your entry ID on the `mediaProvider`
+Now set your entry ID on that `mediaProvider`
 
 ```
 mediaProvider.entryId = ENTRY_ID
 ```
 
-Load that media by creating a `MediaConfig` with a video start time of zero seconds, and then passing that config to `player.prepare()`
+Load the media by creating a `MediaConfig` with a video start time of zero seconds, and then passing that config to `player.prepare()`
 
 ```
 mediaProvider.loadMedia { (mediaEntry, error) in
@@ -98,10 +110,10 @@ mediaProvider.loadMedia { (mediaEntry, error) in
 }
 ```
 
-The setupPlayer() function should now look like this: 
+The `loadMedia` function should now look like this: 
 
 ```
-func setupPlayer() {
+func loadMedia() {
 
     let sessionProvider = SimpleSessionProvider(serverURL: SERVER_BASE_URL, partnerId: Int64(PARTNER_ID), ks: ks)
 
@@ -120,20 +132,12 @@ func setupPlayer() {
     }
 }
 ```
-
-We're missing on last thing: the player container. Head over to the Storyboard. Create a new PlayerView, and drag to get your desired player size. Name it playerContainer. There should be a new outlet in the ViewController. 
-
-At the beginning of the setupPlayer() function, set the player to equal the new playerContainer. 
-```
-self.player?.view = self.playerContainer
-```
 At this point, you should be able to successfully run the code and see your video player in the app. So far, your code should look like this: 
 
 ```
 import UIKit
 import PlayKit
 import PlayKitUtils
-import PlayKitKava
 import PlayKitProviders
 
 let SERVER_BASE_URL = "https://cdnapisec.kaltura.com"
@@ -148,12 +152,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var playerContainer: PlayerView!
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
 
-        self.player = try! PlayKitManager.shared.loadPlayer(pluginConfig:nil)
+        self.player = try! PlayKitManager.shared.loadPlayer(pluginConfig: createPluginConfig())
         
         self.setupPlayer()
+        self.loadMedia()
     }
 
     override func didReceiveMemoryWarning() {
@@ -161,9 +165,10 @@ class ViewController: UIViewController {
     }
     
     func setupPlayer() {
-        
         self.player?.view = self.playerContainer
-        
+    }
+    
+    func loadMedia() {
         let sessionProvider = SimpleSessionProvider(serverURL: SERVER_BASE_URL, partnerId: Int64(PARTNER_ID), ks: ks)
         
         let mediaProvider: OVPMediaProvider = OVPMediaProvider(sessionProvider)
@@ -174,9 +179,8 @@ class ViewController: UIViewController {
             if let me = mediaEntry, error == nil {
                 
                 let mediaConfig = MediaConfig(mediaEntry: me, startTime: 0.0)
-    
-                self.player.prepare(mediaConfig)
                 
+                self.player.prepare(mediaConfig)
             }
         }
     }
@@ -186,4 +190,17 @@ class ViewController: UIViewController {
 
 ### Add Buttons and Controls 
 
-As you've noticed, you're unable to play or pause the video. This is where controls come in. 
+At this point you've probably noticed that we have no way of playing the video in the player. Start by creating a play/pause button, a slider (scrubber), a current position label, and a (reamaining) duration label. 
+
+```
+    @IBOutlet weak var playPauseButton: UIButton!
+    @IBOutlet weak var playheadSlider: UISlider!
+    @IBOutlet weak var positionLabel: UILabel!
+    @IBOutlet weak var durationLabel: UILabel!
+```
+
+What we'll need is to handle the state of what's happening in the player. 
+
+### Analytics Plugin 
+
+There is a wide variety of plugins available for the player, which can be found here. We will implement the KAVA plugin, which stands for Kaltura Video Analytics. 
