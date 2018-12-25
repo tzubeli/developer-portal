@@ -55,7 +55,7 @@ Inside the class, declare the kaltura session (ks) and the player.
 
 ```
 var ks: String?
-var player: Player! 
+var player: Player?
 ```
 
 > **Including a Kaltura Session in the player** allows for monitoring and analytics on your video, as well as the ability to restrict content access. The Kaltura Session should always be created on the server side. If you don't include a KS, the video can be viewed by anyone, and the viewers will be recorded as anonymous. 
@@ -199,7 +199,83 @@ At this point you've probably noticed that we have no way of playing the video i
     @IBOutlet weak var durationLabel: UILabel!
 ```
 
-What we'll need is to handle the state of what's happening in the player. 
+### Player State 
+
+What we'll need now is to handle the state of what's happening in the player - whether it is idle, playing, paused, or ended. So we'll add an enum called state at the top of the class:
+```
+enum State {
+    case idle, playing, paused, ended
+}
+```
+as well as a Property Observer on that enum which switches on each state:
+
+```
+var state: State = .idle {
+    didSet {
+        let title: String
+        switch state {
+        case .idle:
+            title = "|>"
+        case .playing:
+            title = "||"
+        case .paused:
+            title = "|>"
+        case .ended:
+            title = "<>"
+        }
+        playPauseButton.setTitle(title, for: .normal)
+    }
+}
+```
+
+What this does is listen for a change to the state variable, and set the title accordingly on the play/pause button. In a proper application, you'd set the SVG of choice for the play/pause/repeat buttons, but for the purpose of understanding this example we'll use text. 
+
+At the beginning of the `viewDidLoad` function, set the state to `idle.`
+`self.state = .idle` 
+
+On the playPauseButton, add a new IBAction for a "Touch Up Inside" event and link it to a new `playerTouched` function that switches the state when the play/pause button is touched. 
+
+```
+    @IBAction func playTouched(_ sender: Any) {
+        guard let player = self.player else {
+            print("player is not set")
+            return
+        }
+        
+        switch state {
+        case .playing:
+            player.pause()
+        case .idle:
+            player.play()
+        case .paused:
+            player.play()
+        case .ended:
+            player.seek(to: 0)
+            player.play()
+        }
+    }
+```
+
+### Player Slider 
+
+The slider is made up of a few components: the playhead, the current time stamp, and the duration of the entry. Most of this configuration happens in the `setupPlayer` function. 
+Firstly, a formatter for displaying the number of seconds as `HH:MM:SS`: 
+
+```
+let formatter = DateComponentsFormatter()
+formatter.allowedUnits = [.hour, .minute, .second]
+formatter.unitsStyle = .positional
+formatter.zeroFormattingBehavior = .pad
+
+func format(_ time: TimeInterval) -> String {
+    if let s = formatter.string(from: time) {
+        return s.count > 7 ? s : "0" + s
+    } else {
+        return "00:00:00"
+    }
+}
+```
+
 
 ### Analytics Plugin 
 
