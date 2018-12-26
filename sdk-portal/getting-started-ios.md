@@ -71,7 +71,7 @@ func setupPlayer() {
 Now in the `viewDidLoad` function, load the player. We'll start without a pluginConfig, but we will cover adding plugins later in this guide. 
 
  ```
-  self.player = try! PlayKitManager.shared.loadPlayer(pluginConfig: nil)
+self.player = try! PlayKitManager.shared.loadPlayer(pluginConfig: nil)
  ```
 Next, call the newly created setupPlayer function. 
 ```
@@ -192,7 +192,7 @@ class ViewController: UIViewController {
 
 ### Add Buttons and Controls 
 
-At this point you've probably noticed that we have no way of playing the video in the player. Start by creating a play/pause button, a slider (scrubber), a current position label, and a (reamaining) duration label. 
+At this point you've probably noticed that we have no way of playing the video in the player. Start by creating a play/pause button, a slider (scrubber), a current position label, and a (reamaining) duration label. You can put the play/pause button to the left of the slider, where it generally goes, or directly on top of the player (or both!)
 
 ```
     @IBOutlet weak var playPauseButton: UIButton!
@@ -499,8 +499,46 @@ class ViewController: UIViewController {
 
 ```
 
+## Plugins 
 
+The Kaltura playkit offers various modules for iOS that can be added to the player. Adding plugins is easy and requires little configuration. You can find a full list of available plugins here. 
 
-### Analytics Plugin 
+### Kava Plugin 
 
-There is a wide variety of plugins available for the player, which can be found here. We will implement the KAVA plugin, which stands for Kaltura Video Analytics. 
+Probably the most important plugin is the KAVA plugin - Kaltura Video Analytics. It provides real time analytics for live and on-demand video. With historical, raw, or summarized data, it is easy to determine how, when, and where content was seen and shared by viewers. 
+
+The KAVA plugin is available through CocoaPods as "PlayKitKava". It was included in the Podfile at the beginning of the guide. To use the plugin, we'll need to import it, then register and configure it. 
+
+```
+import PlayKitKava
+```
+
+Begin with a function that creates the KAVA plugin. It requires the Partner ID, the entry ID, and the KS, which is what identifies the user. The rest of the arguments are optional. Full documentation can be found here. 
+
+```
+func createKavaConfig() -> KavaPluginConfig {
+    return KavaPluginConfig(partnerId: PARTNER_ID, entryId: entryId, ks: ks, playbackContext: nil, referrer: nil, applicationVersion: nil, playlistId: nil, customVar1: nil, customVar2: nil, customVar3: nil)
+}
+```
+
+Add that plugin to the player in the `loadMedia` function by calling `player.updatePluginConfig`. This should be included before the `player.prepare`.
+
+```
+player.updatePluginConfig(pluginName: KavaPlugin.pluginName, config: self.createKavaConfig())
+```
+
+Next, you need a function that manages all the plugins you might want to add to the player. In our case, it will return the function we just created. 
+
+```
+func createPluginConfig() -> PluginConfig? {
+    return PluginConfig(config: [KavaPlugin.pluginName: createKavaConfig()])
+}
+```
+
+Lastly, we'll pass that function instead of `nil` to the loadPlayer call in `viewDidLoad`:
+
+```
+self.player = try! PlayKitManager.shared.loadPlayer(pluginConfig: createPluginConfig())
+```
+
+The KAVA plugin is now included in the player, and all data about plays and shares can be viewed in the KMC or retrieved using the Kaltura Reporting API. 
