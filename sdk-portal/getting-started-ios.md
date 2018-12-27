@@ -1,6 +1,8 @@
-# Getting Started with SDK 3.0 iOS
+# Kaltura Player SDK 3.0 (iOS) 
 
-This guide will walk you through the steps for adding a Kaltura video player to your iOS mobile application.
+One of the key challenges in creating video applications is in delivering the experience to the user through a video player. If you're thinking about building video into your mobile application, the Kaltura Mobile Video SDKs provide the framework and tools to help you easily embed the Kaltura Player into native environments in your applications. Within a matter of minutes and just a couple lines of code, your app will contain a video player that is focused on speed and performance, and features an incredible time-to-first-frame. It also includes various plugins that you can easily add, such as the video analytics plugin, which is desinged to track and collect events about who is watching the videos and how they are being shared. The Kaltura Player SDK eliminates all of the headache around implementing video in your application, giving you the time to focus on everything else. 
+
+This guide will walk you through the steps for adding a Kaltura video player to your iOS mobile application. If you're looking for the Android guide, click here. 
 
 ## Before Your Begin
 
