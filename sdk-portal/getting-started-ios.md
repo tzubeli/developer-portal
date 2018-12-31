@@ -36,10 +36,12 @@ target 'OVPStarter' do
 end
 ```
 
+In the directory of the 
+
 ## Add a Basic Kaltura Player 
 
 The code below will cover a few functions needed in order to get the bare bones of a kaltura player, as well as a few additional steps regarding plugins and UI. 
-Note that the Kaltura Player does *not* include a UI, and the UI examples below are for instructional purposes only. 
+> Reminder that the Kaltura Player does *not* include a UI, and the UI examples below are for instructional purposes only. 
 
 ### Setting Up 
 
