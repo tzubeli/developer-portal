@@ -244,7 +244,8 @@ var state: State = .idle {
 
 What this does is listen for a change to the state variable, and set the title accordingly on the play/pause button. In a proper application, you'd set the SVG of choice for the play/pause/repeat buttons, but for the purpose of understanding this example we'll use text. 
 
-At the beginning of the `viewDidLoad` function, set the state to `idle.`
+At the beginning of the `viewDidLoad` function, set the state to idle. 
+
 `self.state = .idle` 
 
 On the playPauseButton, add a new IBAction for a "Touch Up Inside" event and link it to a new `playerTouched` function that switches the state when the play/pause button is touched. 
