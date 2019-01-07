@@ -200,7 +200,8 @@ class ViewController: UIViewController {
 
 ### Add Buttons and Controls 
 
-At this point you've probably noticed that we have no way of playing the video in the player. Start by creating a play/pause button, a slider (scrubber), a current position label, and a (reamaining) duration label. You can put the play/pause button to the left of the slider, where it generally goes, or directly on top of the player (or both!)
+At this point you've probably noticed that we have no way of playing the video in the player. Start by adding button images of your choice to the Assets catalogue of your project. Then, in the storyboard, create a play/pause button, a slider (scrubber), a current position label, and a (reamaining) duration label. For the play/pause button, in the Attributes Inspector, click the dropdown for Title and select Attributed. Then type in the name for the play image under Image. 
+Lastly, create the outlets for all your new objects in the Controller: 
 
 ```
     @IBOutlet weak var playPauseButton: UIButton!
@@ -211,34 +212,32 @@ At this point you've probably noticed that we have no way of playing the video i
 
 ### Player State 
 
-What we'll need now is to handle the state of what's happening in the player - whether it is idle, playing, paused, or ended. So we'll add an enum called state at the top of the class:
+Currently our play button is only set to show a play icon, and we'll want it to change for different scenarious. What we'll need is to handle the state of what's happening in the player - whether it is idle, playing, paused, or ended. Let's add an enum called state at the top of the class:
 ```
 enum State {
     case idle, playing, paused, ended
 }
 ```
-as well as a Property Observer on that enum which switches on each state:
+And a Property Observer on that enum which switches on each state.
 
 ```
 var state: State = .idle {
-    didSet {
-        let title: String
-        switch state {
-        case .idle:
-            title = "|>"
-        case .playing:
-            title = "||"
-        case .paused:
-            title = "|>"
-        case .ended:
-            title = "<>"
+      didSet {
+          switch state {
+          case .idle:
+              playPauseButton.setImage(UIImage(named: "btn_play"), for: .normal)
+          case .playing:
+              playPauseButton.setImage(UIImage(named: "btn_pause"), for: .normal)
+          case .paused:
+              playPauseButton.setImage(UIImage(named: "btn_play"), for: .normal)
+          case .ended:
+              playPauseButton.setImage(UIImage(named: "btn_refresh"), for: .normal)
+          }
         }
-        playPauseButton.setTitle(title, for: .normal)
     }
-}
 ```
 
-What this does is listen for a change to the state variable, and set the title accordingly on the play/pause button. In a proper application, you'd set the SVG of choice for the play/pause/repeat buttons, but for the purpose of understanding this example we'll use text. 
+What this does is listen for a change to the state, and based on whether the player is currently idle, paused, or playing, the picture of the play/pause button is changed accordingly. 
 
 At the beginning of the `viewDidLoad` function, set the state to idle. 
 
