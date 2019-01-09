@@ -57,6 +57,30 @@ let PARTNER_ID = 0000000
 let ENTRY_ID = "1_abc6st"
 ```
 
+### Create a Kaltura Session 
+
+The Kaltura Sesssion is an authorization string that identifies the user watching the video. Including a Kaltura Session (KS) in the player allows for monitoring and analytics of the video, as well as the ability to restrict content access. The KS would generally be created on the server side of the application, and passed to the controller. 
+
+```
+var ks: String?
+```
+
+However, for the purpose of this guide, we will demonstrate how to create a KS on the client side using the Application Token API. An Application Token is used in cases where different applications with varying permissions need access to your Kaltura account, without using your Admin Secret. The appToken is created and customized by the account administrator, and then used by the developers to generate Kaltura Sessions for their respective applications. 
+
+You can create an appToken with the [appToken.add](https://developer.kaltura.com/console/service/appToken/action/add) action. Once you've created it, hold on to its token and ID as you'll need those to create the session. You can also see a list of all available appTokens by using [appToken.list](https://developer.kaltura.com/console/service/appToken/action/list). 
+
+There are a few steps to creating a KS with an appToken 
+1. **Generate a basic kaltura session:** because all calls to the API *must* include a Kaltura Session, we first use the session API to create what is called a **widget session**, which has limited functionality and is used in the following steps 
+2. **Create a hashString** of the appToken token and the widget session, combined. 
+3. **Call the appToken.startSession API** with the widget session, the appToken ID, and the hashString. 
+Let's dive in: 
+
+**Step 1: Generate a widget session** 
+
+**Step 2: Create the hash string**
+
+**Step 3: Get the Kaltura Session** 
+
 ### Create the Player
 
 Inside the class, declare the kaltura session (ks) and the player. 
