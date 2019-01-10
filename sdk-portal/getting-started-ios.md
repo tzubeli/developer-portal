@@ -237,7 +237,7 @@ func loadMedia() {
     }
 }
 ```
-At this point, you should be able to successfully run the code and see your video player in the app. So far, your code should look like this: 
+At this point, you should be able to successfully run the code and see your video player in the app. Your code would look like this: 
 
 ```
 import UIKit
@@ -297,19 +297,19 @@ class ViewController: UIViewController {
 
 ### Add Buttons and Controls 
 
-At this point you've probably noticed that we have no way of playing the video in the player. Start by adding button images of your choice to the Assets catalogue of your project. Then, in the storyboard, create a play/pause button, a slider (scrubber), a current position label, and a (reamaining) duration label. For the play/pause button, in the Attributes Inspector, click the dropdown for Title and select Attributed. Then type in the name for the play image under Image. 
+At this point you've probably noticed that we have no way of playing the video in the player. Start by adding button images of your choice to the Assets catalogue of your project. Then, in the storyboard, create a play/pause button, a slider (scrubber), a current position label, and a (remaining) duration label. For the play/pause button, in the Attributes Inspector, click the dropdown for Title and select Attributed. Under Image, type in the name of the play button file (it should have autocomplete for existing files). 
 Lastly, create the outlets for all your new objects in the Controller: 
 
 ```
-    @IBOutlet weak var playPauseButton: UIButton!
-    @IBOutlet weak var playheadSlider: UISlider!
-    @IBOutlet weak var positionLabel: UILabel!
-    @IBOutlet weak var durationLabel: UILabel!
+@IBOutlet weak var playPauseButton: UIButton!
+@IBOutlet weak var playheadSlider: UISlider!
+@IBOutlet weak var positionLabel: UILabel!
+@IBOutlet weak var durationLabel: UILabel!
 ```
 
 ### Player State 
 
-Currently our play button is only set to show a play icon, and we'll want it to change for different scenarious. What we'll need is to handle the state of what's happening in the player - whether it is idle, playing, paused, or ended. Let's add an enum called state at the top of the class:
+Currently our play button is only set to show a play icon, and we'll want it to change for different scenarios. What we'll need is to handle the state of what's happening in the player - whether it is idle, playing, paused, or ended. Let's add an enum called state at the top of the class:
 ```
 enum State {
     case idle, playing, paused, ended
@@ -343,24 +343,24 @@ At the beginning of the `viewDidLoad` function, set the state to idle.
 On the playPauseButton, add a new IBAction for a "Touch Up Inside" event and link it to a new `playerTouched` function that switches the state when the play/pause button is touched. 
 
 ```
-    @IBAction func playTouched(_ sender: Any) {
-        guard let player = self.player else {
-            print("player is not set")
-            return
-        }
-        
-        switch state {
-        case .playing:
-            player.pause()
-        case .idle:
-            player.play()
-        case .paused:
-            player.play()
-        case .ended:
-            player.seek(to: 0)
-            player.play()
-        }
+@IBAction func playTouched(_ sender: Any) {
+    guard let player = self.player else {
+        print("player is not set")
+        return
     }
+
+    switch state {
+    case .playing:
+        player.pause()
+    case .idle:
+        player.play()
+    case .paused:
+        player.play()
+    case .ended:
+        player.seek(to: 0)
+        player.play()
+    }
+}
 ```
 
 ### Player Slider 
@@ -401,7 +401,7 @@ self.player?.addObserver(self, events: [PlayerEvent.durationChanged], block: { (
 })
 ```        
 
-The third observer listens for player events, and updates the State when the player begins playing, is paused, or has ended. 
+The third observer listens for player events, and updates the State when the player begins playing, is paused, or has ended, which is what the switch case above is dependent on. Player events can be found [here](https://kaltura.github.io/playkit/api/ios/core/Classes/PlayerEvent.html#/s:7PlayKit11PlayerEventC12StateChangedC)
 
 ```
 self.player?.addObserver(self, events: [PlayerEvent.play, PlayerEvent.ended, PlayerEvent.pause], block: { (event) in
