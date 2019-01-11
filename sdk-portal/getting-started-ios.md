@@ -116,7 +116,7 @@ func generateSession() {
 
 **Step 2: Create the token hash**
 
-You'll need to install and import a library of your choice for creating the hash string. We chose a library called [Arcane](https://cocoapods.org/pods/Arcane) which is like the Obj-C CommonCrypto library. Concatenate the widget session and the appToken token, and create the hash string. *Note that you must use the same Hash Type that you used to create the appToken. We usually use SHA256*
+You'll need to install and import a library of your choice for creating the hash string. We chose a library called [Arcane](https://cocoapods.org/pods/Arcane) which is like the Obj-C CommonCrypto library. Concatenate the widget session with the appToken token, and create the hash string. *Note that you must use the same Hash Type that you used to create the appToken.*
 
 ```
 let tokenHash: String = Hash.SHA256("\(widgetKs)\(appToken)")!
@@ -159,7 +159,7 @@ func generateSession() {
 
 ### Create the Player
 
-Inside the class, below the ks declaration, add a declaration for the Player. 
+Inside the class, below the `ks` declaration, add a declaration for the Player. 
 
 ```
 var player: Player?
@@ -340,7 +340,7 @@ At the beginning of the `viewDidLoad` function, set the state to idle.
 
 `self.state = .idle` 
 
-On the playPauseButton, add a new IBAction for a "Touch Up Inside" event and link it to a new `playerTouched` function that switches the state when the play/pause button is touched. 
+On the playPauseButton, add a new IBAction for a "Touch Up Inside" event and link it to a new `playerTouched` function that calls play/pause on the player when the button is touched. Available Basic Player actions can be found [here](https://kaltura.github.io/playkit/api/ios/core/Protocols/BasicPlayer.html) 
 
 ```
 @IBAction func playTouched(_ sender: Any) {
@@ -606,13 +606,13 @@ class ViewController: UIViewController {
 
 ## Plugins 
 
-The Kaltura playkit offers various modules for iOS that can be added to the player. Adding plugins is easy and requires little configuration. You can find a full list of available plugins here. 
+The Kaltura playkit offers various modules for iOS that can be added to the player. Adding plugins is easy and requires little configuration. You can find a full list of available plugins [here](https://kaltura.github.io/playkit/). 
 
 ### Kava Plugin 
 
 Probably the most important plugin is the KAVA plugin - Kaltura Video Analytics. It provides real time analytics for live and on-demand video. With historical, raw, or summarized data, it is easy to determine how, when, and where content was seen and shared by viewers. 
 
-The KAVA plugin is available through CocoaPods as "PlayKitKava". It was included in the Podfile at the beginning of the guide. To use the plugin, we'll need to import it, then register and configure it. 
+The [KAVA plugin](https://github.com/kaltura/playkit-ios-kava) is available through CocoaPods as "PlayKitKava". It was included in the Podfile at the beginning of the guide. To use the plugin, we'll need to import it, then register and configure it. 
 
 ```
 import PlayKitKava
