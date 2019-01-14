@@ -458,21 +458,19 @@ class ViewController: UIViewController {
     var ks: String?
     var player: Player? // Created in viewDidLoad
     var state: State = .idle {
-        didSet {
-            let title: String
-            switch state {
-            case .idle:
-                title = "|>"
-            case .playing:
-                title = "||"
-            case .paused:
-                title = "|>"
-            case .ended:
-                title = "<>"
-            }
-            playPauseButton.setTitle(title, for: .normal)
-        }
-    }
+          didSet {
+              switch state {
+              case .idle:
+                  playPauseButton.setImage(UIImage(named: "btn_play"), for: .normal)
+              case .playing:
+                  playPauseButton.setImage(UIImage(named: "btn_pause"), for: .normal)
+              case .paused:
+                  playPauseButton.setImage(UIImage(named: "btn_play"), for: .normal)
+              case .ended:
+                  playPauseButton.setImage(UIImage(named: "btn_refresh"), for: .normal)
+              }
+          }
+      }
     
     @IBOutlet weak var playerContainer: PlayerView!
     @IBOutlet weak var playPauseButton: UIButton!
