@@ -34,8 +34,7 @@ If you don't have a Podfile already, create a file in your Project directory cal
 
 ## Add a Basic Kaltura Player 
 
-The code below will cover a few functions needed in order to get the bare bones of a kaltura player, as well as a few additional steps regarding plugins and UI. 
-> Reminder that the Kaltura Player does *not* include a UI, and the UI examples below are for instructional purposes only. 
+The code below will cover a few functions needed in order to get the bare bones of a kaltura player, as well as a few additional steps regarding implementing your player UI and adding plugins. 
 
 ### Setting Up 
 
