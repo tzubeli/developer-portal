@@ -207,7 +207,7 @@ class ViewController: UIViewController {
 
 You've probably noticed that there are no buttons for playing or pausing the video. To learn about adding elements to the Player's UI, [click here](https://github.com/tzubeli/developer-portal/blob/master/sdk-portal/ios-ui.md) 
 
-The Kaltura Player SDK also offers various plugins for iOS that can be added to the player. Learn more [here](https://github.com/tzubeli/developer-portal/tree/master/sdk-portal). 
+The Kaltura Player SDK also offers various plugins for iOS that can be added to the player. Learn more [here](https://github.com/tzubeli/developer-portal/blob/master/sdk-portal/ios-plugins.md). 
 
 
 
