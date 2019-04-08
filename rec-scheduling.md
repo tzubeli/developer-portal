@@ -26,7 +26,7 @@ In order to automate the process, you might want to create events using the API 
 
 ### Template Entry 
 
-The template entry should contain all metadata you want included in entries that are created for each event recording. Using [entry.add](https://developer.kaltura.com/console/service/media/action/add), you have the ability to set things like categories, creator ID, or tags:
+The template entry should contain all metadata you want included in entries that are created for each event recording. Using [media.add](https://developer.kaltura.com/console/service/media/action/add), you have the ability to set things like categories, creator ID, or tags:
 
 ```php
 $entry = new KalturaMediaEntry();
