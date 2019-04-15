@@ -98,12 +98,15 @@ $result = $schedulePlugin->scheduleEventResource->add($scheduleEventResource);
 
 ### List Events
 
-As mentioned, the encoder needs to know its own reference ID in order to find events. This can be done using  [scheduleEvent.list](https://developer.kaltura.com/console/service/scheduleEvent/action/list) and filtering by the ID of the resource, as well as other values like event time, or tags. 
+As mentioned, the encoder needs to know its own reference ID in order to find events. This can be done using  [scheduleEvent.list](https://developer.kaltura.com/console/service/scheduleEvent/action/list) and filtering by the ID of the resource, the time frame, and status `ACTIVE`, as well as other values like owner or tags. 
 
 ```php
 $schedulePlugin = KalturaScheduleClientPlugin::get($client);
 $filter = new KalturaScheduleEventFilter();
 $filter->resourceIdEqual = "562931";
+$filter->statusEqual = KalturaScheduleEventStatus::ACTIVE;
+$filter->startDateGreaterThanOrEqual = 1555312473;
+$filter->endDateLessThanOrEqual = 1555319686;
 $pager = new KalturaFilterPager();
 
 $result = $schedulePlugin->scheduleEvent->listAction($filter, $pager);
