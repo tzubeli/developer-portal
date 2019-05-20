@@ -111,7 +111,8 @@ npm start
     </tr>
 </table>
 
-#### Events:
+### Events:
 * **mediaUploadStarted**: fires after entry has been created and media upload start. Returns entryId by event.detail.entryId
 * **mediaUploadEnded**: fires after media upload has been ended. Returns entryId by event.detail.entryId
 * **mediaUploadCanceled**: fires when media upload has been canceled by the user. Returns entryId by event.detail.entryId
+
