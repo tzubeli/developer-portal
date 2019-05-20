@@ -111,6 +111,8 @@ npm start
     </tr>
 </table>
 
+See embed example [here](https://github.com/tzubeli/developer-portal/blob/master/express-recorder/sample-embed.html). 
+
 ### Events:
 * **mediaUploadStarted**: fires after entry has been created and media upload start. Returns entryId by event.detail.entryId
 * **mediaUploadEnded**: fires after media upload has been ended. Returns entryId by event.detail.entryId
